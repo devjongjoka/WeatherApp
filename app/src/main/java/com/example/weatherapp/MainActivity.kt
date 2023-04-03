@@ -8,19 +8,22 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,27 +63,39 @@ class MainActivity : ComponentActivity() {
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "New York, NY", fontSize = 32.sp, modifier = Modifier.padding(8.dp))
-            SunIcon()
+            Text(
+                text = "New York, NY",
+                fontSize = 32.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+            LocalIcon()
         }
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Partly cloudy with a chance of rain in the afternoon", fontSize = 16.sp, modifier = Modifier.padding(8.dp))
+            Text(
+                text = "Partly cloudy with a chance of rain in the afternoon",
+                fontSize = 16.sp,
+                modifier = Modifier.padding(8.dp)
+            )
         }
-        Text(text = "69" + "\u00B0", fontSize = 64.sp, textAlign = TextAlign.Center)
+        Text(
+            text = "69" + "\u00B0",
+            fontSize = 64.sp,
+            textAlign = TextAlign.Center
+        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .border(BorderStroke(2.dp, Color.White))
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LazyColumn(
                     contentPadding = PaddingValues(vertical = 8.dp),
+                    modifier = Modifier.height(400.dp)
                 ) {
                     items(hourlyWeatherList) { hourlyWeather ->
                         HourlyWeatherItem(hourlyWeather = hourlyWeather)
@@ -90,14 +105,18 @@ class MainActivity : ComponentActivity() {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = "Partly cloudy with a chance of rain in the afternoon", fontSize = 16.sp, modifier = Modifier.padding(8.dp))
+                Text(text = "Partly cloudy with a chance of rain in the afternoon",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
 }
 
 @Composable
-fun SunIcon(modifier: Modifier = Modifier) {
+fun LocalIcon(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .padding(horizontal = 74.dp)
@@ -124,17 +143,22 @@ fun SearchIcon(onClick: () -> Unit = {}) {
 
 @Composable
 fun HourlyWeatherItem(hourlyWeather: HourlyWeather) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-            .fillMaxWidth()
+    Card(
+        modifier = Modifier.padding(4.dp).width(170.dp),
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Text(text = hourlyWeather.time)
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = "${hourlyWeather.temperature}°F")
-        Spacer(modifier = Modifier.width(16.dp))
-        SearchIcon()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = hourlyWeather.time)
+            Text(text = "${hourlyWeather.temperature}°F")
+            Icon(
+                painter = painterResource(id = R.drawable.outline_wb_sunny_24),
+                contentDescription = "cloud"
+            )
+        }
     }
 }
 
