@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -39,6 +40,16 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable fun MainScreen() {
+
+    val weekDayList: List<WeekDay> =
+        (0..6).map { i ->
+            WeekDay(
+                "Monday",
+                60 + i,
+                40 + i,
+                "Rain"
+            )
+        }
 
     val hourlyWeatherList: List<HourlyWeather> =
         (0..20).map { i -> HourlyWeather(
@@ -78,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 textAlign = TextAlign.Center
             )
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(400.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -88,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     LazyColumn(
                         contentPadding = PaddingValues(vertical = 8.dp),
-                        modifier = Modifier.height(400.dp)
+                        modifier = Modifier.height(350.dp)
                     ) {
                         items(hourlyWeatherList) { hourlyWeather ->
                             HourlyWeatherItem(hourlyWeather = hourlyWeather)
@@ -103,6 +114,15 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center
                     )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                LazyRow {
+                    items(weekDayList) { weekDay ->
+                        WeekDayItem(weekDay = weekDay)
+                    }
                 }
             }
         }
@@ -146,6 +166,45 @@ fun HourlyWeatherItem(hourlyWeather: HourlyWeather) {
         }
     }
 }
+
+data class WeekDay(
+    val day: String,
+    val high: Int,
+    val low: Int,
+    val condition: String
+)
+@Composable
+fun WeekDayItem(weekDay: WeekDay) {
+    Card{
+        Column(
+            modifier = Modifier
+                .padding(4.dp)
+                .size(120.dp),
+        ) {
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(text = weekDay.day, fontSize = 16.sp)
+            }
+            Row() {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "Hi: ${weekDay.high}")
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "Lo: ${weekDay.low}")
+                }
+            }
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(text = weekDay.condition, fontSize = 16.sp)
+            }
+        }
+    }
+}
+
 
 @Composable
 fun MyAppBar() {
