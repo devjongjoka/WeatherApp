@@ -1,6 +1,6 @@
 package com.example.weatherapp.models
 
 data class Hour (
-    var smth:String
-        ){
-}
+    val time: String,
+    val temperature: Int
+)
