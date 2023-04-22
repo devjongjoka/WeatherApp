@@ -89,7 +89,9 @@ class MainActivity : ComponentActivity() {
                 textAlign = TextAlign.Center
             )
             Row(
-                modifier = Modifier.fillMaxWidth().height(400.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -149,7 +151,9 @@ fun LocalIcon(modifier: Modifier = Modifier) {
 @Composable
 fun HourlyWeatherItem(hourlyWeather: HourlyWeather) {
     Card(
-        modifier = Modifier.padding(4.dp).width(170.dp),
+        modifier = Modifier
+            .padding(4.dp)
+            .width(170.dp),
         shape = RoundedCornerShape(8.dp)
     ) {
         Row(
@@ -208,7 +212,10 @@ fun WeekDayItem(weekDay: WeekDay) {
 
 @Composable
 fun MyAppBar() {
+    var search: String by remember{ mutableStateOf("") }
+
     TopAppBar(
+
         title = { Text(text = "WeatherApp") },
         navigationIcon = {
             IconButton(onClick = { /* Handle navigation icon click */ }) {
@@ -216,6 +223,7 @@ fun MyAppBar() {
             }
         }
     )
+
 }
 
 data class HourlyWeather(
