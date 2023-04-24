@@ -1,20 +1,17 @@
 package com.example.weatherapp.models
 
+import com.google.gson.annotations.SerializedName
+
 data class CurrentWeather(
-    //name of city
-    var name: String,
-    //region is "state"
-    var region:String,
-    var country:String,
-    var temp_f:Double,
-    //summary of weather in text
-    var text:String,
+    @SerializedName("temp_f")
+    val temp_f:Double,
+    @SerializedName("humidity")
     //percentage of humidity
-    var humidity:Int,
-    //wind speed
-    var wind: Double,
-
-    var iconURL:String?
-
-    ) {
+    val humidity:Int,
+    @SerializedName("air_quality")
+    //air quality
+    val air: Air,
+    @SerializedName("condition")
+    val condition : Condition
+) {
 }
