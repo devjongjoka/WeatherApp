@@ -20,7 +20,7 @@ interface  WeatherFetchI{
 
 class WeatherFetcher :WeatherFetchI{
 
-    private val URL = "http://api.weatherapi.com/v1/current.json?key=d9bf3857d9ef449f86703159232204&q=providence&aqi=yes"
+    private val URL = "http://api.weatherapi.com/v1/current.json?key=b397bda724ef4ebf8a0204033230105&q=providence&aqi=yes"
     private val client = OkHttpClient()
 
     override suspend fun getWeather(): Weather{
