@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,11 +39,12 @@ import kotlinx.coroutines.launch
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    location: String
+) {
     val vm = remember{ WeatherViewModel() }
     val menuState = rememberBackdropScaffoldState(BackdropValue.Concealed)
     val scope = rememberCoroutineScope()
-
     BackdropScaffold(
         appBar = {
             TopAppBar(
@@ -57,7 +59,7 @@ fun MainScreen() {
                 }
             }
         ) },
-        frontLayerContent = { LazyColumn{item { FrontContent(vm) }}},
+        frontLayerContent = { LazyColumn { item { FrontContent(vm, location) } } },
         backLayerContent = { BackContent(vm) },
         scaffoldState = menuState,
         gesturesEnabled = menuState.isRevealed,
@@ -84,13 +86,14 @@ fun BackContent(
             }
         )
     }
-
 }
 
 @Composable
 fun FrontContent(
-    vm: WeatherViewModel
+    vm: WeatherViewModel,
+    location: String
 ) {
+    Text(location, modifier = Modifier.clickable { vm.searchWeather(location) })
     if (vm.waiting.value) {
         CircularProgressIndicator()
     } else {
@@ -164,10 +167,22 @@ fun FrontContent(
                             contentPadding = PaddingValues(vertical = 8.dp),
                             modifier = Modifier.height(335.dp)
                         ) {
-                            val filtered = vm.current.value?.forecast!!.forecastday.first().hour.filter { it.time.substring(11,13).toInt() >= vm.current.value?.current!!.time.substring(11,13).toInt() }
-                            val size = filtered.size
-                            val addOn = vm.current.value?.forecast!!.forecastday[1].hour.subList(0, (24-size))
-                            val hours = filtered + addOn
+                            val filtered =
+                                vm.current.value?.forecast!!.forecastday.first().hour.filter {
+                                    it.time.substring(
+                                        11,
+                                        13
+                                    ).toInt() >= vm.current.value?.current!!.time.substring(
+                                        11,
+                                        13
+                                    ).toInt()
+                                }
+                            val nextDayHours =
+                                vm.current.value?.forecast!!.forecastday[1].hour.subList(
+                                    0,
+                                    (24 - filtered.size)
+                                )
+                            val hours = filtered + nextDayHours
                             items(hours) { hourlyWeather ->
                                 HourlyRow(hourlyWeather = hourlyWeather, vm)
                             }
@@ -192,11 +207,17 @@ fun FrontContent(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.height(200.dp).padding(8.dp),
+                        modifier = Modifier
+                            .height(200.dp)
+                            .padding(8.dp),
                     ) {
                         DailyTile(vm.current.value?.forecast!!.forecastday[0], vm, "Today")
                         DailyTile(vm.current.value?.forecast!!.forecastday[1], vm, "Tomorrow")
-                        DailyTile(vm.current.value?.forecast!!.forecastday[2], vm, vm.current.value?.forecast!!.forecastday[2].date.substring(5,10))
+                        DailyTile(
+                            vm.current.value?.forecast!!.forecastday[2],
+                            vm,
+                            vm.current.value?.forecast!!.forecastday[2].date.substring(5, 10)
+                        )
                     }
                 }
             }
