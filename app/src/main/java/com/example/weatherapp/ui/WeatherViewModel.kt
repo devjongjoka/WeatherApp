@@ -22,15 +22,14 @@ class WeatherViewModel: ViewModel() {
 
     private val _fetcher = WeatherFetcher()
 
-    val weekDayList: List<Daily>
-    val hourlyWeatherList: List<Hour>
-
+//    val weekDayList: List<Daily>
+//    val hourlyWeatherList: List<Hour>
 
     init{
         _waiting = mutableStateOf(false)
         waiting = _waiting
-        weekDayList = (0..2).map { i -> Daily("Monday", 60 + i, 40 + i, "Rain") }
-        hourlyWeatherList = (0..23).map { i -> Hour("${i+1}:00", 60.0+i, condition = Condition("","")) }
+//        weekDayList = (0..2).map { i -> Daily("Monday", 60 + i, 40 + i, "Rain") }
+//        hourlyWeatherList = (0..23).map { i -> Hour("${i+1}:00", 60.0+i, condition = Condition("","")) }
         viewModelScope.launch {
             _waiting.value = true
             _current.value = _fetcher.getWeather(_zip)
@@ -38,9 +37,7 @@ class WeatherViewModel: ViewModel() {
         }
     }
 
-
     suspend fun fetchImage(url:String): Bitmap? {
-
         return _fetcher.getIcon("http:$url")
     }
 
