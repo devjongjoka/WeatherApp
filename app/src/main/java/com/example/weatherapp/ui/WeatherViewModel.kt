@@ -15,7 +15,9 @@ class WeatherViewModel: ViewModel() {
     private val _current : MutableState<Weather?>  = mutableStateOf(
         Weather(
             Location("New York", "", ""),
-            CurrentWeather(temp_f = 80.0, humidity = 50, Air(index = 50), condition = Condition(text = "Sunshine", iconURL = "//cdn.weatherapi.com/weather/64x64/day/113.png"))
+            CurrentWeather(temp_f = 80.0, humidity = 50, Air(index = 50), condition = Condition(text = "Sunshine", iconURL = "//cdn.weatherapi.com/weather/64x64/day/113.png")),
+            forecast = Forecast((0..6).map { i->ForecastDay("", day = Day(60,60, condition = Condition("","")),
+                (0..23).map { i-> Hour("",0, condition = Condition("",""))} as MutableList<Hour>) } as MutableList<ForecastDay>)
             )
         )
 
@@ -30,7 +32,7 @@ class WeatherViewModel: ViewModel() {
 
     init{
         weekDayList = (0..6).map { i -> Daily("Monday", 60 + i, 40 + i, "Rain") }
-        hourlyWeatherList = (0..20).map { i -> Hour("${i+1}:00", 60+i ) }
+        hourlyWeatherList = (0..20).map { i -> Hour("${i+1}:00", 60+i, condition = Condition("","")) }
         viewModelScope.launch {
             val weather = _fetcher.getWeather()
             _current.value = weather
