@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Day(
     @SerializedName("maxtemp_f")
-    val maxTemp: Int,
+    val maxTemp: Double,
     @SerializedName("mintemp_f")
-    val minTemp:Int,
+    val minTemp:Double,
     @SerializedName("condition")
     val condition: Condition
 )

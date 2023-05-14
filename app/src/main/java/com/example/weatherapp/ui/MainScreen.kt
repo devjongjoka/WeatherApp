@@ -107,7 +107,7 @@ fun FrontContent(
                     mutableStateOf<Bitmap?>(null)
                 }
                 LaunchedEffect(key1 = vm.current.value?.location!!.name) {
-                    icon = vm.fetchImage()
+                    icon = vm.fetchImage(vm.current.value.current.condition.iconURL)
                 }
                 if (icon == null){
                     CircularProgressIndicator()
@@ -149,8 +149,8 @@ fun FrontContent(
                     contentPadding = PaddingValues(vertical = 8.dp),
                     modifier = Modifier.height(350.dp)
                 ) {
-                    items(vm.hourlyWeatherList) { hourlyWeather ->
-                        HourlyRow(hourlyWeather = hourlyWeather)
+                    items(vm.current.value?.forecast!!.forecastday.first().hour) { hourlyWeather ->
+                        HourlyRow(hourlyWeather = hourlyWeather,vm)
                     }
                 }
             }
@@ -166,7 +166,7 @@ fun FrontContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             LazyRow {
-                items(vm.weekDayList) { dayWeather ->
+                items(vm.current.value?.forecast!!.forecastday) { dayWeather ->
                     DailyTile(weekDay = dayWeather)
                 }
             }

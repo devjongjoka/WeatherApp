@@ -9,9 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.models.Daily
+import com.example.weatherapp.models.Day
+import com.example.weatherapp.models.ForecastDay
 
 @Composable
-fun DailyTile(weekDay: Daily) {
+fun DailyTile(weekDay: ForecastDay) {
     Card{
         Column(
             modifier = Modifier
@@ -19,24 +21,24 @@ fun DailyTile(weekDay: Daily) {
                 .size(120.dp),
         ) {
             Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = weekDay.day, fontSize = 16.sp)
+                Text(text = weekDay.date, fontSize = 16.sp)
             }
             Row() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Hi: ${weekDay.high}")
+                    Text(text = "Hi: ${weekDay.day.maxTemp}")
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Lo: ${weekDay.low}")
+                    Text(text = "Lo: ${weekDay.day.minTemp}")
                 }
             }
             Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = weekDay.condition, fontSize = 16.sp)
+                Text(text = weekDay.day.condition.text, fontSize = 16.sp)
             }
         }
     }

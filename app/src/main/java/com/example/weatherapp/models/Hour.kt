@@ -6,7 +6,7 @@ data class Hour (
     @SerializedName("time")
     val time: String,
     @SerializedName("temp_f")
-    val temperature: Int,
+    val temperature: Double,
     @SerializedName("condition")
     val condition:Condition
 

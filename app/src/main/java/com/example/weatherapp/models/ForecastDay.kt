@@ -8,6 +8,6 @@ data class ForecastDay(
     @SerializedName("day")
     val day:Day,
     @SerializedName("hour")
-    val hour: MutableList<Hour>
+    val hour: List<Hour>
 
 )
