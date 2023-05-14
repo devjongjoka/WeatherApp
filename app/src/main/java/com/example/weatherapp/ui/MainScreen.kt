@@ -9,8 +9,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -57,7 +57,7 @@ fun MainScreen() {
                 }
             }
         ) },
-        frontLayerContent = { LazyColumn(){item { FrontContent(vm) }}},
+        frontLayerContent = { LazyColumn{item { FrontContent(vm) }}},
         backLayerContent = { BackContent(vm) },
         scaffoldState = menuState,
         gesturesEnabled = menuState.isRevealed,
@@ -103,10 +103,23 @@ fun FrontContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = vm.current.value?.location!!.name,
-                    fontSize = 32.sp,
-                    modifier = Modifier.padding(8.dp)
+                    text = vm.current.value?.current!!.temp_f.toInt().toString() + "\u00B0",
+                    fontSize = 70.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
+                Column(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = vm.current.value?.current!!.condition.text,
+                        fontSize = 25.sp,
+                    )
+                    Text(
+                        text = "${vm.current.value?.forecast!!.forecastday.first().day.maxTemp} / ${vm.current.value?.forecast!!.forecastday.first().day.minTemp} \u00B0",
+                        fontSize = 16.sp,
+                    )
+                }
                 Box(
                     contentAlignment = Alignment.Center
                 ) {
@@ -127,24 +140,13 @@ fun FrontContent(
                     }
                 }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = vm.current.value?.current!!.condition.text,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
             Text(
-                text = vm.current.value?.current!!.temp_f.toInt().toString() + "\u00B0",
-                fontSize = 64.sp,
-                textAlign = TextAlign.Center
+                text = "${vm.current.value?.location!!.name}, ${vm.current.value?.location!!.region}",
+                fontSize = 32.sp,
+                modifier = Modifier.padding(8.dp)
             )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -152,12 +154,23 @@ fun FrontContent(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LazyColumn(
-                        contentPadding = PaddingValues(vertical = 8.dp),
-                        modifier = Modifier.height(350.dp)
+                    Card(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        items(vm.current.value?.forecast!!.forecastday.first().hour) { hourlyWeather ->
-                            HourlyRow(hourlyWeather = hourlyWeather, vm)
+                        LazyColumn(
+                            contentPadding = PaddingValues(vertical = 8.dp),
+                            modifier = Modifier.height(335.dp)
+                        ) {
+                            val filtered = vm.current.value?.forecast!!.forecastday.first().hour.filter { it.time.substring(11,13).toInt() >= vm.current.value?.current!!.time.substring(11,13).toInt() }
+                            val size = filtered.size
+                            val addOn = vm.current.value?.forecast!!.forecastday[1].hour.subList(0, (24-size))
+                            val hours = filtered + addOn
+                            items(hours) { hourlyWeather ->
+                                HourlyRow(hourlyWeather = hourlyWeather, vm)
+                            }
                         }
                     }
                 }
@@ -169,12 +182,21 @@ fun FrontContent(
                     HumidityDial(vm.current.value?.current!!.humidity)
                 }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth()
+            Card(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                LazyRow {
-                    items(vm.current.value?.forecast!!.forecastday) { dayWeather ->
-                        DailyTile(weekDay = dayWeather)
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.height(200.dp).padding(8.dp),
+                    ) {
+                        DailyTile(vm.current.value?.forecast!!.forecastday[0], vm, "Today")
+                        DailyTile(vm.current.value?.forecast!!.forecastday[1], vm, "Tomorrow")
+                        DailyTile(vm.current.value?.forecast!!.forecastday[2], vm, vm.current.value?.forecast!!.forecastday[2].date.substring(5,10))
                     }
                 }
             }
@@ -187,6 +209,28 @@ fun FrontContent(
 fun AqiDial(
     idx: Int
 ) {
+    val color: Color
+    val msg: String
+    when(idx) {
+        1 -> {
+            color = Color.Green
+            msg = "Good"}
+        2 -> {color = Color.Green
+            msg = "Moderate"}
+        3 -> {color = Color.Yellow
+            msg = "Moderate"}
+        4 -> {color = Color.Yellow
+            msg = "Unhealthy"}
+        5 -> {color = Color.Red
+            msg = "Unhealthy"}
+        6 -> {color = Color.Red
+            msg = "Hazardous"}
+        else -> {
+            color = Color.Green
+            msg = "Good"
+        }
+    }
+
     var done by remember { mutableStateOf(false) }
     val currVal = animateFloatAsState(
         targetValue = if(done) { (idx/6.0).toFloat() } else { 0f },
@@ -196,22 +240,39 @@ fun AqiDial(
         )
     )
     LaunchedEffect(key1 = true) { done = true }
-    Box(
-        modifier = Modifier.size(60.dp * 2f),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(
-            modifier = Modifier.size(60.dp * 2f)
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(80.dp * 2f),
+        shape = RoundedCornerShape(8.dp)
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(80.dp * 2f),
+            verticalArrangement = Arrangement.Center
         ) {
-            drawArc(
-                color = Color.Green,
-                startAngle = -90f,
-                sweepAngle = 360 * currVal.value,
-                useCenter = false,
-                style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(80.dp * 2f),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(
+                    modifier = Modifier.size(60.dp * 2f)
+                ) {
+                    drawArc(
+                        color = color,
+                        startAngle = -90f,
+                        sweepAngle = 360 * currVal.value,
+                        useCenter = false,
+                        style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
+                    )
+                }
+                Text("AQI:(${(currVal.value * 6).toInt()})\n${msg}", textAlign = TextAlign.Center)
+            }
         }
-        Text("AQI:\nGood (${(currVal.value*6).toInt()})", textAlign = TextAlign.Center)
     }
 }
 
@@ -231,21 +292,41 @@ fun HumidityDial(
         )
     )
     LaunchedEffect(key1 = true) { done = true }
-    Box(
-        modifier = Modifier.size(60.dp * 2f),
-        contentAlignment = Alignment.Center
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(80.dp * 2f),
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Canvas(
-            modifier = Modifier.size(60.dp * 2f)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(80.dp * 2f),
+            verticalArrangement = Arrangement.Center
         ) {
-            drawArc(
-                color = Color.Blue,
-                startAngle = -90f,
-                sweepAngle = 360 * currVal.value,
-                useCenter = false,
-                style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(60.dp * 2f),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(
+                    modifier = Modifier.size(60.dp * 2f)
+                ) {
+                    drawArc(
+                        color = Color.Blue,
+                        startAngle = -90f,
+                        sweepAngle = 360 * currVal.value,
+                        useCenter = false,
+                        style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
+                    )
+                }
+                Text(
+                    "Humidity:\n" + (currVal.value * 100).toInt().toString() + "%",
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-        Text("Humidity:\n"+(currVal.value*100).toInt().toString()+ "%", textAlign = TextAlign.Center)
     }
 }

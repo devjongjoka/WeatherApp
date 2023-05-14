@@ -12,6 +12,8 @@ data class CurrentWeather(
     //air quality
     val air: Air,
     @SerializedName("condition")
-    val condition : Condition
+    val condition : Condition,
+    @SerializedName("last_updated")
+    val time: String
 ) {
 }
