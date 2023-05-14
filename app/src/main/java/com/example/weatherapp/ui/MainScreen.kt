@@ -77,7 +77,11 @@ fun BackContent(
             onValueChange = {new: String -> input.value = new},
             modifier = Modifier.fillMaxWidth(),
             placeholder = {Text("Search By ZIP")},
-            trailingIcon = {Icon(Icons.Default.Search, contentDescription = "search")}
+            trailingIcon = {
+                IconButton(onClick = { vm.searchWeather(input.value) }) {
+                    Icon(Icons.Default.Search, contentDescription = "search")
+                }
+            }
         )
     }
 

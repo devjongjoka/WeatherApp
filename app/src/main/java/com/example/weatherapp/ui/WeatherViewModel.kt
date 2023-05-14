@@ -20,7 +20,7 @@ class WeatherViewModel: ViewModel() {
         )
 
     val current : State<Weather?> = _current
-
+    var zip : String = "21014"
     private val _fetcher = WeatherFetcher()
 
 
@@ -32,12 +32,20 @@ class WeatherViewModel: ViewModel() {
         weekDayList = (0..6).map { i -> Daily("Monday", 60 + i, 40 + i, "Rain") }
         hourlyWeatherList = (0..20).map { i -> Hour("${i+1}:00", 60+i ) }
         viewModelScope.launch {
-            val weather = _fetcher.getWeather()
+            val weather = _fetcher.getWeather(zip)
             _current.value = weather
         }
     }
 
     suspend fun fetchImage(): Bitmap? {
         return _fetcher.getIcon("http:" + _current.value?.current!!.condition.iconURL)
+    }
+
+    fun searchWeather(zipCode: String) {
+        zip = zipCode
+        viewModelScope.launch {
+            val weather = _fetcher.getWeather(zip)
+            _current.value = weather
+        }
     }
 }
