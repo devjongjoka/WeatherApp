@@ -34,13 +34,10 @@ class WeatherFetcher :WeatherFetchI{
                 .build()
             val response = client.newCall(request).execute()
             val responseBody = response.body
-
             if(responseBody != null){
                 val jsonString = responseBody.string()
-                Log.d("Tag",jsonString)
                 val gson = Gson()
                 val weatherType = object: TypeToken<Weather>(){}.type
-
                 val  weather: Weather = gson.fromJson(jsonString, weatherType)
 
                 weather
@@ -48,7 +45,6 @@ class WeatherFetcher :WeatherFetchI{
             else {
                 throw Exception ("Response is empty")
             }
-
         }
     }
 
@@ -69,5 +65,4 @@ class WeatherFetcher :WeatherFetchI{
             }
         }
     }
-
 }
