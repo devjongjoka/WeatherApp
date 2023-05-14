@@ -1,10 +1,10 @@
-package data.impl
+package com.example.weatherapp.data.impl
 
 import android.app.Application
 import androidx.room.Room
 import com.example.weatherapp.models.savedLocation
-import data.ILocationsRepository
-import data.LocationsDatabase
+import com.example.weatherapp.data.ILocationsRepository
+import com.example.weatherapp.data.LocationsDatabase
 
 class LocationsDatabaseRepository(app: Application) : ILocationsRepository {
 

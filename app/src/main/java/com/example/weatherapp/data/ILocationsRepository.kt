@@ -1,4 +1,4 @@
-package data
+package com.example.weatherapp.data
 
 import com.example.weatherapp.models.savedLocation
 

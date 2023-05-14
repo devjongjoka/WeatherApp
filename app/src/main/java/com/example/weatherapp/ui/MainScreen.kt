@@ -1,6 +1,7 @@
 package com.example.weatherapp.ui
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     location: String
 ) {
-    val vm = remember{ WeatherViewModel() }
+    val vm = remember{ WeatherViewModel(app = Application()) }
     val menuState = rememberBackdropScaffoldState(BackdropValue.Concealed)
     val scope = rememberCoroutineScope()
     BackdropScaffold(
@@ -76,11 +77,18 @@ fun BackContent(
     Column(modifier = Modifier.fillMaxHeight()) {
         OutlinedTextField(
             value = input.value,
-            onValueChange = {new: String -> input.value = new},
+            onValueChange = {new: String ->
+                if(new.matches(Regex("^\\d{0,5}")))
+                    input.value = new
+            },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {Text("Search By ZIP")},
             trailingIcon = {
-                IconButton(onClick = { vm.searchWeather(input.value) }) {
+                IconButton(onClick = {
+                    if(input.value.length==5){
+                        vm.searchWeather(input.value)
+                    }
+                }) {
                     Icon(Icons.Default.Search, contentDescription = "search")
                 }
             }
