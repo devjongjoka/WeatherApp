@@ -22,6 +22,7 @@ interface  WeatherFetchI{
 class WeatherFetcher :WeatherFetchI{
 
     private val URL = "http://api.weatherapi.com/v1/forecast.json?key=b397bda724ef4ebf8a0204033230105&days=3&aqi=yes&alerts=yes&q="
+
     private val client = OkHttpClient()
 
     override suspend fun getWeather(zipCode: String): Weather{
@@ -33,10 +34,13 @@ class WeatherFetcher :WeatherFetchI{
                 .build()
             val response = client.newCall(request).execute()
             val responseBody = response.body
+
             if(responseBody != null){
                 val jsonString = responseBody.string()
+                Log.d("Tag",jsonString)
                 val gson = Gson()
                 val weatherType = object: TypeToken<Weather>(){}.type
+
                 val  weather: Weather = gson.fromJson(jsonString, weatherType)
 
                 weather
@@ -49,6 +53,7 @@ class WeatherFetcher :WeatherFetchI{
     }
 
     override suspend fun getIcon(url: String): Bitmap? {
+        Log.d("APICALL", "GETTING ICONS")
         return withContext(Dispatchers.IO) {
             val request = Request.Builder()
                 .get()
