@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @ExperimentalFoundationApi
 @Composable
 fun MainScreen() {
-    val vm = WeatherViewModel()
+    val vm = remember{ WeatherViewModel() }
     val menuState = rememberBackdropScaffoldState(BackdropValue.Concealed)
     val scope = rememberCoroutineScope()
 
@@ -91,87 +91,91 @@ fun BackContent(
 fun FrontContent(
     vm: WeatherViewModel
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Row(
+    if(vm.waiting.value) {
+        CircularProgressIndicator()
+    } else {
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = vm.current.value?.location!!.name,
-                fontSize = 32.sp,
-                modifier = Modifier.padding(8.dp)
-            )
-            Box(
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                var icon by remember {
-                    mutableStateOf<Bitmap?>(null)
-                }
-                LaunchedEffect(key1 = vm.current.value?.location!!.name) {
-                    icon = vm.fetchImage()
-                }
-                if (icon == null){
-                    CircularProgressIndicator()
-                }else{
-                    Image(
-                        modifier = Modifier.size(100.dp, 100.dp),
-                        bitmap = icon!!.asImageBitmap(),
-                        contentDescription = ""
-                    )
-                }
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = vm.current.value?.current!!.condition.text,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(8.dp)
-            )
-        }
-        Text(
-            text = vm.current.value?.current!!.temp_f.toInt().toString() + "\u00B0",
-            fontSize = 64.sp,
-            textAlign = TextAlign.Center
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LazyColumn(
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    modifier = Modifier.height(350.dp)
+                Text(
+                    text = vm.current.value?.location!!.name,
+                    fontSize = 32.sp,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Box(
+                    contentAlignment = Alignment.Center
                 ) {
-                    items(vm.hourlyWeatherList) { hourlyWeather ->
-                        HourlyRow(hourlyWeather = hourlyWeather)
+                    var icon by remember {
+                        mutableStateOf<Bitmap?>(null)
+                    }
+                    LaunchedEffect(key1 = vm.current.value?.location!!.name) {
+                        icon = vm.fetchImage()
+                    }
+                    if (icon == null) {
+                        CircularProgressIndicator()
+                    } else {
+                        Image(
+                            modifier = Modifier.size(100.dp, 100.dp),
+                            bitmap = icon!!.asImageBitmap(),
+                            contentDescription = ""
+                        )
                     }
                 }
             }
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                AqiDial(vm.current.value?.current!!.air.index)
-                HumidityDial(vm.current.value?.current!!.humidity)
+                Text(
+                    text = vm.current.value?.current!!.condition.text,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            LazyRow {
-                items(vm.weekDayList) { dayWeather ->
-                    DailyTile(weekDay = dayWeather)
+            Text(
+                text = vm.current.value?.current!!.temp_f.toInt().toString() + "\u00B0",
+                fontSize = 64.sp,
+                textAlign = TextAlign.Center
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        modifier = Modifier.height(350.dp)
+                    ) {
+                        items(vm.hourlyWeatherList) { hourlyWeather ->
+                            HourlyRow(hourlyWeather = hourlyWeather)
+                        }
+                    }
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    AqiDial(vm.current.value?.current!!.air.index)
+                    HumidityDial(vm.current.value?.current!!.humidity)
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                LazyRow {
+                    items(vm.weekDayList) { dayWeather ->
+                        DailyTile(weekDay = dayWeather)
+                    }
                 }
             }
         }
