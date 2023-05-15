@@ -2,12 +2,10 @@ package com.example.weatherapp.ui
 
 import android.app.Application
 import android.graphics.Bitmap
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.Networking.WeatherFetcher
 import com.example.weatherapp.data.ILocationsRepository

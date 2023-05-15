@@ -2,7 +2,6 @@ package com.example.weatherapp.Networking
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import com.example.weatherapp.models.Weather
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -26,7 +25,6 @@ class WeatherFetcher :WeatherFetchI{
     private val client = OkHttpClient()
 
     override suspend fun getWeather(zipCode: String): Weather{
-        Log.d("APICALL", "YEEEEEEEEET")
         return withContext(Dispatchers.IO){
             val request = Request.Builder()
                 .get()
@@ -49,7 +47,6 @@ class WeatherFetcher :WeatherFetchI{
     }
 
     override suspend fun getIcon(url: String): Bitmap? {
-        Log.d("APICALL", "GETTING ICONS")
         return withContext(Dispatchers.IO) {
             val request = Request.Builder()
                 .get()

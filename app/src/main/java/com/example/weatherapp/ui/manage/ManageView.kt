@@ -32,8 +32,6 @@ fun ManageView(
     var showDialog = remember { mutableStateOf(false) }
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val locations = vm.locations.value
-
     if (showDialog.value) {
         AlertDialog(
             onDismissRequest = {

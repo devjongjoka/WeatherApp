@@ -7,7 +7,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.ui.WeatherViewModel
 import com.example.weatherapp.ui.location.LocationView
 import com.example.weatherapp.ui.manage.ManageView

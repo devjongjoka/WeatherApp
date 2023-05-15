@@ -1,43 +1,23 @@
 package com.example.weatherapp.ui
 
 import android.annotation.SuppressLint
-import android.app.Application
-import android.content.ClipData.Item
-import android.graphics.Bitmap
-import android.util.Log
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.*
-import com.example.weatherapp.models.savedLocation
-import com.example.weatherapp.ui.Components.DailyTile
-import com.example.weatherapp.ui.Components.HourlyRow
-import com.example.weatherapp.ui.location.LocationView
 import com.example.weatherapp.ui.nav.NavGraph
 import com.example.weatherapp.ui.nav.Routes
 import kotlinx.coroutines.launch
@@ -86,9 +66,7 @@ fun BackContent(
     menuState: BackdropScaffoldState,
     vm: WeatherViewModel
 ) {
-    val backStackEntry = nav.currentBackStackEntryAsState()
     val scope = rememberCoroutineScope()
-    val currentDestination = backStackEntry.value?.destination
 
     Button(
         onClick = {
