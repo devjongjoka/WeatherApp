@@ -19,7 +19,7 @@ class WeatherViewModel: ViewModel() {
     private val _waiting: MutableState<Boolean>
     val waiting: State<Boolean>
 
-    var zip = "21014"
+    private var _zip = "21014"
 
     private val _fetcher = WeatherFetcher()
 
@@ -28,7 +28,7 @@ class WeatherViewModel: ViewModel() {
         waiting = _waiting
         viewModelScope.launch {
             _waiting.value = true
-            _current.value = _fetcher.getWeather(zip)
+            _current.value = _fetcher.getWeather(_zip)
             _waiting.value = false
         }
     }
@@ -38,10 +38,9 @@ class WeatherViewModel: ViewModel() {
     }
 
     fun searchWeather(zipCode: String) {
-        zip = zipCode
+        _zip = zipCode
         viewModelScope.launch {
-            val weather = _fetcher.getWeather(zip)
-            _current.value = weather
+            _current.value = _fetcher.getWeather(_zip)
         }
     }
 }
