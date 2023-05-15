@@ -90,13 +90,6 @@ fun BackContent(
     val scope = rememberCoroutineScope()
     val currentDestination = backStackEntry.value?.destination
 
-    val locations = remember{ mutableStateOf(listOf<savedLocation>())}
-
-    LaunchedEffect(key1 = menuState) {
-        locations.value = vm.getLocations()
-        Log.d("8 == D", locations.value.toString())
-    }
-
     Button(
         onClick = {
             scope.launch { menuState.conceal() }
@@ -106,7 +99,7 @@ fun BackContent(
     )
     LazyColumn {
 
-        items(locations.value) { savedLocation ->
+        items(vm.locations.value) { savedLocation ->
             Card(modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)) {
@@ -115,6 +108,7 @@ fun BackContent(
                         onClick = {
                             scope.launch {
                                 vm._zip = savedLocation.zip
+                                vm.searchWeather(vm._zip)
                                 menuState.conceal()
                                 nav.navigate(Routes.Location.route)
                             }
@@ -124,7 +118,8 @@ fun BackContent(
                     Button(
                         onClick = {
                             scope.launch {
-                                vm._repository.deleteLocation(savedLocation)
+                                vm.deleteLocation(savedLocation)
+                                vm.locations.value=vm.getLocations()
                                 menuState.conceal()
                             }
                         },
