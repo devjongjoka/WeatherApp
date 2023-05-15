@@ -1,12 +1,10 @@
 package com.example.weatherapp.ui.location
 
+import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,12 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.ui.Components.DailyTile
 import com.example.weatherapp.ui.Components.HourlyRow
 import com.example.weatherapp.ui.WeatherViewModel
+import android.net.Uri
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 
 @ExperimentalFoundationApi
 @Composable
@@ -39,9 +41,15 @@ fun LocationView(
     ){
         Column(
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.verticalScroll(ScrollState(0))
         ) {
-            Text(location, modifier = Modifier.clickable { vm.searchWeather(location) })
+            val context = LocalContext.current
+            Text("View Current Location in Google Maps", style = TextStyle(textDecoration = TextDecoration.Underline) , modifier = Modifier.clickable {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse("geo:$location")
+                context.startActivity(intent)
+            })
             if (vm.waiting.value) {
                 CircularProgressIndicator()
             } else {
