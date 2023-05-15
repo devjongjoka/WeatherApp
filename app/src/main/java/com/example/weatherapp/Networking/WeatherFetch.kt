@@ -13,22 +13,22 @@ import okhttp3.Request
 
 interface  WeatherFetchI{
 
-    suspend fun getWeather(): Weather;
+    suspend fun getWeather(zipCode: String): Weather;
     suspend fun getIcon(url:String ) : Bitmap?;
 
 }
 
 class WeatherFetcher :WeatherFetchI{
 
-    private val URL = "http://api.weatherapi.com/v1/current.json?key=b397bda724ef4ebf8a0204033230105&q=providence&aqi=yes"
+
+    private val URL = "http://api.weatherapi.com/v1/forecast.json?key=b397bda724ef4ebf8a0204033230105&days=3&aqi=yes&alerts=yes&q="
     private val client = OkHttpClient()
 
-    override suspend fun getWeather(): Weather{
+    override suspend fun getWeather(zipCode: String): Weather{
         return withContext(Dispatchers.IO){
-
             val request = Request.Builder()
                 .get()
-                .url(URL)
+                .url("$URL$zipCode")
                 .build()
             val response = client.newCall(request).execute()
             val responseBody = response.body
@@ -43,15 +43,14 @@ class WeatherFetcher :WeatherFetchI{
             else {
                 throw Exception ("Response is empty")
             }
-
         }
     }
 
-    override suspend fun getIcon(weatherUrl: String): Bitmap? {
+    override suspend fun getIcon(url: String): Bitmap? {
         return withContext(Dispatchers.IO) {
             val request = Request.Builder()
                 .get()
-                .url(weatherUrl)
+                .url(url)
                 .build()
             val response = client.newCall(request).execute()
             val responseBody = response.body
@@ -63,5 +62,4 @@ class WeatherFetcher :WeatherFetchI{
             }
         }
     }
-
 }

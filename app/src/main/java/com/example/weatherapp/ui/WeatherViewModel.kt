@@ -1,43 +1,71 @@
 package com.example.weatherapp.ui
 
+import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.Networking.WeatherFetcher
+import com.example.weatherapp.data.ILocationsRepository
+import com.example.weatherapp.data.impl.LocationsDatabaseRepository
 import com.example.weatherapp.models.*
 import kotlinx.coroutines.launch
 
-class WeatherViewModel: ViewModel() {
+class WeatherViewModel(app: Application): AndroidViewModel(app) {
 
-    private val _current : MutableState<Weather?>  = mutableStateOf(
-        Weather(
-            Location("New York", "", ""),
-            CurrentWeather(temp_f = 80.0, humidity = 50, Air(index = 50), condition = Condition(text = "Sunshine", iconURL = "//cdn.weatherapi.com/weather/64x64/day/113.png"))
-            )
-        )
-
+    private val _current : MutableState<Weather?>  = mutableStateOf(null)
     val current : State<Weather?> = _current
 
+    val locations = mutableStateOf<List<savedLocation>>(emptyList())
+
+    private val _waiting: MutableState<Boolean>
+    val waiting: State<Boolean>
+
+    var _zip = "21014"
+
+    var _repository: ILocationsRepository = LocationsDatabaseRepository(app = getApplication())
     private val _fetcher = WeatherFetcher()
 
-
-    val weekDayList: List<Daily>
-    val hourlyWeatherList: List<Hour>
-
-
     init{
-        weekDayList = (0..6).map { i -> Daily("Monday", 60 + i, 40 + i, "Rain") }
-        hourlyWeatherList = (0..20).map { i -> Hour("${i+1}:00", 60+i ) }
+        _waiting = mutableStateOf(false)
+        waiting = _waiting
         viewModelScope.launch {
-            val weather = _fetcher.getWeather()
-            _current.value = weather
+            _waiting.value = true
+            locations.value = _repository.getLocations()
+            _current.value = _fetcher.getWeather(_zip)
+            _waiting.value = false
         }
     }
 
-    suspend fun fetchImage(): Bitmap? {
-        return _fetcher.getIcon("http:" + _current.value?.current!!.condition.iconURL)
+    fun addLocation(savedLocation: savedLocation){
+        viewModelScope.launch {
+            _repository.addLocation(savedLocation)
+            locations.value = _repository.getLocations()
+        }
+    }
+
+    suspend fun deleteLocation(savedLocation: savedLocation){
+        viewModelScope.launch {
+            _repository.deleteLocation(savedLocation)
+            locations.value = _repository.getLocations()
+        }
+    }
+
+    suspend fun getLocations() : List<savedLocation> {
+        return _repository.getLocations()
+    }
+
+
+    suspend fun fetchImage(url:String): Bitmap? {
+        return _fetcher.getIcon("http:$url")
+    }
+
+    fun searchWeather(zipCode: String) {
+        _zip = zipCode
+        viewModelScope.launch {
+            _current.value = _fetcher.getWeather(_zip)
+        }
     }
 }
