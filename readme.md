@@ -27,7 +27,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installation
 
-1. Clone the repo: "git clone git clone https://mbush5@bitbucket.org/michaelbush95/weatherapp.git"
+1. Clone the repo: "git clone https://mbush5@bitbucket.org/michaelbush95/weatherapp.git"
 2. Open the project in android studio.
 3. Run the project on an emulator.
 
