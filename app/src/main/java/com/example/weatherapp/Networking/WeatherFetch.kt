@@ -20,8 +20,8 @@ interface  WeatherFetchI{
 
 class WeatherFetcher :WeatherFetchI{
 
-    private val URL = "http://api.weatherapi.com/v1/forecast.json?key=b397bda724ef4ebf8a0204033230105&days=3&aqi=yes&alerts=yes&q="
 
+    private val URL = "http://api.weatherapi.com/v1/forecast.json?key=b397bda724ef4ebf8a0204033230105&days=3&aqi=yes&alerts=yes&q="
     private val client = OkHttpClient()
 
     override suspend fun getWeather(zipCode: String): Weather{
